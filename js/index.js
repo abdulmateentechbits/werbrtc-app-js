@@ -6,6 +6,7 @@ endButton.disabled = true;
 
 const localVideo = document.getElementById('localVideo');
 const remoteVideo = document.getElementById('remoteVideo');
+const messageContainer = document.getElementById('callDuration');
 
 let pc1;
 let pc2;
@@ -133,5 +134,7 @@ function hangup() {
     pc1 = null;
     pc2 = null;
     endTime = window.performance.now();
-    alert(`Call duration: ${((endTime-startTime)/1000).toFixed(2)} seconds`);
+    messageContainer.innerText = `Call duration: ${((endTime-startTime)/1000).toFixed(2)} seconds`;
+    messageContainer.style.display = 'block';
+
 }

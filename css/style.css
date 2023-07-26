@@ -1,40 +1,118 @@
+/* Reset some default styles */
+body,
+h1,
+h2,
+h3,
+p,
+ul,
+li {
+    margin: 0;
+    padding: 0;
+}
+
 .container {
-    width: 70%;
-    margin: 50px auto;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    min-height: 100vh;
 }
 
 .video-container {
     display: flex;
-    margin-top: 10px;
+    justify-content: space-around;
+    width: 100%;
+    background-color: #f5f5f5;
+    border-radius: 10px;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
 
+video {
+    width: 45%;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 .controls {
-    display: flex;
-    margin-top: 10px;
-    margin-bottom: 10px;
+    margin-top: 20px;
 }
 
-#remoteVideo {
-    margin-left: 5px;
-    width: 500px;
-    height: 250px;
+.controls button {
+    padding: 10px 20px;
+    margin: 0 5px;
+    border: none;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
 }
 
-#localVideo {
-    margin-left: 5px;
-    width: 500px;
-    height: 250px;
+#startButton {
+    background-color: #2196F3;
 }
 
 #callButton {
-    margin-left: 5px;
+    background-color: #fdd835;
 }
 
 #hangupButton {
-    margin-left: 5px;
+    background-color: #F44336;
 }
+
+/* Your existing styles */
+
+.message-container {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    background-color: #f5f5f5;
+    border-radius: 5px;
+    padding: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+#messageInput {
+    flex: 1;
+    padding: 8px;
+    border: none;
+    border-radius: 5px;
+    resize: none;
+    font-size: 16px;
+}
+
+#sendButton {
+    margin-left: 10px;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#sendButton:hover {
+    background-color: #45a049;
+}
+
+#sendButton:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+#callDuration {
+    display: none;
+    margin-top: 20px;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #4CAF50;
+    color: #fff;
+    font-size: 18px;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  }
