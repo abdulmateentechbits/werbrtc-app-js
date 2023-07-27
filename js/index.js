@@ -48,7 +48,7 @@ async function start() {
 
 }
 async function call() {
-    messageContainer.innerText = '';	
+    messageContainer.innerText = '';
     messageContainer.style.display = 'none';
     endButton.disabled = false;
     callButton.disabled = true;
@@ -62,7 +62,7 @@ async function call() {
     pc2.addEventListener('icecandidate', e => handleIceCandidate(pc2, e));
     pc1.addEventListener('iceconnectionstatechange', e => handleIceConnectionStateChange(pc1, e));
     pc2.addEventListener('iceconnectionstatechange', e => handleIceConnectionStateChange(pc2, e));
-    pc2.addEventListener('track',getRemoteStream);
+    pc2.addEventListener('track', getRemoteStream);
 
     const tracks = localStream.getTracks();
 
@@ -125,7 +125,7 @@ async function handleIceCandidate(pc, e) {
 
 }
 
-function getRemoteStream(e){
+function getRemoteStream(e) {
     remoteVideo.srcObject = e.streams[0];
 }
 function hangup() {
@@ -136,7 +136,7 @@ function hangup() {
     pc1 = null;
     pc2 = null;
     endTime = window.performance.now();
-    messageContainer.innerText = `Call duration: ${((endTime-startTime)/1000).toFixed(2)} seconds`;
+    messageContainer.innerText = `Call duration: ${((endTime - startTime) / 1000).toFixed(2)} seconds`;
     messageContainer.style.display = 'block';
 
 }
