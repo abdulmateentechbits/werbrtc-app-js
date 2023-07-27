@@ -48,6 +48,8 @@ async function start() {
 
 }
 async function call() {
+    messageContainer.innerText = '';	
+    messageContainer.style.display = 'none';
     endButton.disabled = false;
     callButton.disabled = true;
     startTime = window.performance.now();
