@@ -1,32 +1,27 @@
-
-
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Rtc</title>
+    <title>WebRTC Chat</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
     <div class="container">
-        <div class="video-container">
-            <video id="localVideo" autoplay></video>
-            <video id="remoteVideo" autoplay></video>
+        <div class="chat-box" id="userA">
+            <h2>User A</h2>
+            <div class="chat-content" id="userAChat"></div>
+            <input type="text" id="userAInput" placeholder="Type a message...">
+            <button class="send-btn" onclick="sendMessage('userA')">Send</button>
         </div>
-        <div class="controls">
-            <button id="startButton">Start</button>
-            <button id="callButton">Call</button>
-            <button id="hangupButton">Hang Up</button>
-        </div>
-       
-        <!-- New element to display the call duration -->
-        <div id="callDuration"></div>
-    </div>
-    
 
+        <div class="chat-box" id="userB">
+            <h2>User B</h2>
+            <div class="chat-content" id="userBChat"></div>
+            <input type="text" id="userBInput" placeholder="Type a message...">
+            <button class="send-btn" onclick="sendMessage('userB')">Send</button>
+        </div>
+    </div>
 
     <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
     <script src="js/index.js"></script>

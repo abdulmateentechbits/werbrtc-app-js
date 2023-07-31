@@ -1,142 +1,61 @@
-const startButton = document.getElementById('startButton');
-const callButton = document.getElementById('callButton');
-const endButton = document.getElementById('hangupButton');
-callButton.disabled = true;
-endButton.disabled = true;
+// Global variables
+const configuration = { iceServers: [{ urls: 'stun:stun.stunprotocol.org' }] };
+let peerConnection;
+let dataChannel;
+const dataChannelOptions = { ordered: true, reliable: true };
 
-const localVideo = document.getElementById('localVideo');
-const remoteVideo = document.getElementById('remoteVideo');
-const messageContainer = document.getElementById('callDuration');
+// Function to set up the WebRTC connection
+async function setupWebRTC() {
+  // Create PeerConnection
+  peerConnection = new RTCPeerConnection(configuration);
 
-let pc1;
-let pc2;
-let localStream = null;
+  // Create DataChannel
+  dataChannel = peerConnection.createDataChannel('chat', dataChannelOptions);
 
-let startTime = 0;
-let endTime = 0;
+  // Event listener for incoming messages
+  dataChannel.onmessage = event => {
+    displayMessage('userA', event.data); // Display received message in User A's chat div
+  };
 
-const constraints = {
-    audio: true,
-    video: true
+  // Event listener for DataChannel establishment
+  dataChannel.onopen = event => {
+    console.log('DataChannel opened.');
+  };
+
+  // Event listener for DataChannel closing
+  dataChannel.onclose = event => {
+    console.log('DataChannel closed.');
+  };
+
+  // Offer/answer negotiation
+  const offer = await peerConnection.createOffer();
+  await peerConnection.setLocalDescription(offer);
+
+  // Simulate signaling server
+  // In a real application, you'd send the offer to the other user via a signaling server
+  // and receive their answer to set as the remote description
+  await new Promise(resolve => setTimeout(resolve, 2000)); // Simulating delay for demonstration purposes
+  const answer = await peerConnection.createAnswer();
+  await peerConnection.setRemoteDescription(answer);
 }
 
-const offerOptions = {
-    offerToReceiveAudio: 1,
-    offerToReceiveVideo: 1
-}
-function getOtherPc(pc) {
-    return pc === pc1 ? pc2 : pc1;
-}
-
-startButton.addEventListener('click', start);
-
-callButton.addEventListener('click', call);
-
-endButton.addEventListener('click', hangup);
-
-async function start() {
-    callButton.disabled = false;
-    startTime = window.performance.now();
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia(constraints);
-        localStream = stream;
-        localVideo.srcObject = stream;
-        startButton.disabled = true;
-    } catch (error) {
-        console.log('Error getUserMedia', error);
-    }
-
-}
-async function call() {
-    messageContainer.innerText = '';	
-    messageContainer.style.display = 'none';
-    endButton.disabled = false;
-    callButton.disabled = true;
-    startTime = window.performance.now();
-
-    const config = {};
-    pc1 = new RTCPeerConnection(config);
-    pc2 = new RTCPeerConnection(config);
-
-    pc1.addEventListener('icecandidate', e => handleIceCandidate(pc1, e));
-    pc2.addEventListener('icecandidate', e => handleIceCandidate(pc2, e));
-    pc1.addEventListener('iceconnectionstatechange', e => handleIceConnectionStateChange(pc1, e));
-    pc2.addEventListener('iceconnectionstatechange', e => handleIceConnectionStateChange(pc2, e));
-    pc2.addEventListener('track',getRemoteStream);
-
-    const tracks = localStream.getTracks();
-
-    for (const track of tracks) {
-        pc1.addTrack(track, localStream);
-    }
-
-    try {
-        const offer = await pc1.createOffer(offerOptions);
-        await onCreateOfferSuccess(offer);
-
-    } catch (error) {
-        console.log("Error occure while creating offer from pc1", error);
-
-    }
-
+// Function to send a message
+function sendMessage(targetUser) {
+  const inputField = document.getElementById(targetUser === 'userA' ? 'userAInput' : 'userBInput');
+  const chatDiv = document.getElementById(targetUser === 'userA' ? 'userBChat' : 'userAChat');
+  const message = inputField.value;
+  if (message.trim() !== '') {
+    chatDiv.innerHTML += `<p><strong>${targetUser}:</strong> ${message}</p>`;
+    dataChannel.send(targetUser + ':' + message); // Add the user identifier before the message
+    inputField.value = '';
+  }
 }
 
-
-async function onCreateOfferSuccess(offer) {
-    try {
-        await pc1.setLocalDescription(offer);
-    } catch (error) {
-        console.log("Error occure while setting pc1 local description: ", error);
-    }
-
-    try {
-        await pc2.setRemoteDescription(offer);
-    } catch (error) {
-        console.log("Error occure while setting pc2 remote description: ", error);
-    }
-
-    try {
-        const answer = await pc2.createAnswer();
-        await onCreateAnswerSuccess(answer);
-    } catch (error) {
-        console.log("Error occure while creating answer from pc2", error);
-    }
+// Function to display received messages
+function displayMessage(targetUser, message) {
+  const chatDiv = document.getElementById(targetUser === 'userA' ? 'userAChat' : 'userBChat');
+  chatDiv.innerHTML += `<p><strong>${message.split(':')[0]}:</strong> ${message.split(':')[1]}</p>`;
 }
 
-async function onCreateAnswerSuccess(answer) {
-    try {
-        await pc2.setLocalDescription(answer);
-    } catch (error) {
-        console.log("Error occure while setting pc2 local description: ", error);
-    }
-    try {
-        await pc1.setRemoteDescription(answer);
-    } catch (error) {
-        console.log("Error occure while setting pc1 remote description: ", error);
-
-    }
-}
-async function handleIceCandidate(pc, e) {
-    try {
-        await getOtherPc(pc).addIceCandidate(e?.candidate);
-    } catch (error) {
-        console.log("Error occure while adding ice candidate: ", error);
-    }
-
-}
-
-function getRemoteStream(e){
-    remoteVideo.srcObject = e.streams[0];
-}
-function hangup() {
-    endButton.disabled = true;
-    callButton.disabled = false;
-    pc1.close();
-    pc2.close();
-    pc1 = null;
-    pc2 = null;
-    endTime = window.performance.now();
-    messageContainer.innerText = `Call duration: ${((endTime-startTime)/1000).toFixed(2)} seconds`;
-    messageContainer.style.display = 'block';
-
-}
+// Call setupWebRTC() when the page has loaded
+window.onload = setupWebRTC;
